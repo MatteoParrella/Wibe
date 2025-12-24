@@ -7,17 +7,43 @@ import { useRouter } from 'next/navigation'
 
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null)
+  const [role, setRole] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
+    const getData = async () => {
+      // 1. Recupero l'utente
+      const { data: authData } = await supabase.auth.getUser()
+      const currentUser = authData?.user || null
+      setUser(currentUser)
+
+      // 2. Recupero il ruolo se l'utente esiste
+      if (currentUser) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', currentUser.id)
+          .single()
+
+        if (!profileError && profileData) {
+          setRole(profileData.role)
+        } else {
+          setRole('clubber')
+        }
+      }
     }
-    getUser()
+
+    getData()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      const sessionUser = session?.user ?? null
+      setUser(sessionUser)
+      if (!sessionUser) {
+        setRole(null)
+      } else {
+        // Se la sessione cambia (es. login), ricarichiamo i dati
+        getData()
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -26,13 +52,13 @@ export default function Navbar() {
   const handleLogout = async (e: React.MouseEvent) => {
     e.preventDefault()
     await supabase.auth.signOut()
+    setRole(null)
     router.push('/login')
     router.refresh()
   }
 
   return (
-    /* MODIFICA 1: z-[100] per stare sopra la mappa e fixed invece di sticky per evitare buchi bianchi */
-    <nav className="fixed top-0 left-0 right-0 z-[100] border-b border-zinc-800/50 bg-black/60 backdrop-blur-xl">
+    <nav className="fixed top-0 left-0 right-0 z-[9999] border-b border-zinc-800/50 bg-black/60 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         
         {/* LOGO */}
@@ -41,28 +67,31 @@ export default function Navbar() {
         </Link>
         
         <div className="flex gap-6 items-center">
-          {/* LINK EVENTI */}
           <Link href="/" className="text-sm font-black uppercase tracking-widest text-zinc-400 hover:text-[#ccff00] transition-colors">
-            Eventi
+            Radar
           </Link>
           
-          {/* TASTO PUBBLICA */}
-          <Link 
-            href="/aggiungi-evento" 
-            className="bg-[#ccff00] text-black px-5 py-2.5 rounded-full font-black text-[10px] uppercase tracking-tighter hover:bg-white transition-all shadow-[0_0_20px_rgba(204,255,0,0.15)]"
-          >
-            + Pubblica
-          </Link>
+          {/* Tasto Pubblica: visibile solo se il ruolo è ESATTAMENTE 'pr' */}
+          {role === 'pr' && (
+            <Link 
+              href="/aggiungi-evento" 
+              className="bg-[#ccff00] text-black px-5 py-2.5 rounded-full font-black text-[10px] uppercase tracking-tighter hover:bg-white transition-all shadow-[0_0_20px_rgba(204,255,0,0.15)]"
+            >
+              + Pubblica
+            </Link>
+          )}
 
-          {/* SEZIONE UTENTE / LOGIN */}
           {user ? (
             <div className="flex items-center gap-4 pl-6 border-l border-zinc-800/50">
-              <Link href="/profile" className="hidden md:flex flex-col items-end group cursor-pointer">
-                <span className="text-[9px] text-zinc-500 font-black uppercase tracking-[0.2em] group-hover:text-[#ccff00] transition-colors">Member</span>
-                <span className="text-xs font-bold text-white group-hover:text-zinc-300 transition-colors lowercase italic">{user.email?.split('@')[0]}</span>
+              <Link href="/profile" className="hidden md:flex flex-col items-end group">
+                <span className="text-[9px] text-zinc-500 font-black uppercase tracking-[0.2em] group-hover:text-[#ccff00] transition-colors">
+                  {role === 'pr' ? 'Official PR' : 'Member'}
+                </span>
+                <span className="text-xs font-bold text-white group-hover:text-zinc-300 transition-colors lowercase italic">
+                  {user.email?.split('@')[0]}
+                </span>
               </Link>
               
-              {/* AVATAR */}
               <div className="relative group">
                 <Link 
                   href="/profile"
@@ -71,7 +100,6 @@ export default function Navbar() {
                   {user.email?.[0].toUpperCase()}
                 </Link>
                 
-                {/* MENU DROP DOWN LOGOUT */}
                 <button 
                   onClick={handleLogout}
                   className="absolute -bottom-12 right-0 bg-white text-black text-[10px] px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all font-black uppercase tracking-tighter hover:bg-[#ccff00] whitespace-nowrap"

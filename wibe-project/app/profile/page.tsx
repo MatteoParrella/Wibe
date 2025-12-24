@@ -4,6 +4,9 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import QRCodeGenerator from '@/components/QRCodeGenerator';
 
+// FORZA IL RICARICAMENTO DEI DATI (Risolve il problema del tasto PR sempre visibile)
+export const revalidate = 0;
+
 interface EventData {
   title: string;
   date: string;
@@ -38,13 +41,14 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
-  // 1. Recupero il profilo per vedere il RUOLO
+  // 1. Recupero il profilo e il ruolo aggiornato
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single();
 
+  // Controllo rigoroso: isPR è vero solo se il ruolo nel DB è esattamente 'pr'
   const isPR = profile?.role === 'pr';
 
   // 2. Recupero i Ticket
@@ -63,7 +67,6 @@ export default async function ProfilePage() {
 
   const tickets = (data as unknown) as Ticket[];
 
-  // 3. UNICO RETURN con tutto il design
   return (
     <main className="min-h-screen bg-black text-white p-6 md:p-12 pt-32">
       <div className="max-w-4xl mx-auto">
@@ -90,7 +93,7 @@ export default async function ProfilePage() {
           </Link>
         </div>
 
-        {/* Card Utente e Azioni Speciali PR */}
+        {/* Card Utente */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
           <div className="bg-zinc-900/30 border border-zinc-800 p-8 rounded-[2.5rem] flex items-center gap-6">
             <div className="w-16 h-16 bg-[#ccff00] rounded-full flex items-center justify-center text-black font-black text-2xl italic">
@@ -102,7 +105,7 @@ export default async function ProfilePage() {
             </div>
           </div>
 
-          {/* Se l'utente è PR, mostriamo il box per pubblicare */}
+          {/* Il tasto compare SOLO se isPR è vero */}
           {isPR && (
             <Link href="/aggiungi-evento" className="group bg-[#ccff00] p-8 rounded-[2.5rem] flex flex-col justify-center hover:bg-white transition-all duration-500">
               <p className="text-black text-[10px] font-black uppercase tracking-widest mb-1">PR Tools</p>
@@ -133,14 +136,18 @@ export default async function ProfilePage() {
                   </div>
                   <div>
                     <h3 className="text-2xl font-black uppercase italic mb-2">{t.event.title}</h3>
-                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{t.event.location} — {new Date(t.event.date).toLocaleDateString()}</p>
+                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                      {t.event.location} — {new Date(t.event.date).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
-               <div className="shrink-0 group-hover:rotate-6 transition-transform duration-500">
-                <QRCodeGenerator 
+                
+                {/* QR Code Generato Dinamicamente */}
+                <div className="shrink-0 group-hover:rotate-6 transition-transform duration-500">
+                  <QRCodeGenerator 
                     value={`wibe-pass-${t.id}`} 
                     size={64} 
-                />
+                  />
                 </div>
               </div>
             ))

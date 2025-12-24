@@ -24,10 +24,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="it" className="bg-black"> {/* Forza il nero qui */}
+    <html lang="it" className="bg-black">
       <body className="bg-black antialiased text-white">
         <Navbar />
-        {/* Assicurati che non ci siano margini bianchi qui */}
         <main className="min-h-screen bg-black">
           {children}
         </main>

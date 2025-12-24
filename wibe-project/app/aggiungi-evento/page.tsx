@@ -1,22 +1,46 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
 export default function AggiungiEvento() {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true) // Inizia su true per il check sicurezza
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     location: '',
-    date: '', // Nuovo campo Data e Ora
+    date: '',
     price: '',
     image_url: '',
     category: 'Techno',
   })
 
-  // Geocoding per trasformare indirizzo in coordinate
+  // --- SICUREZZA: Controllo Ruolo ---
+  useEffect(() => {
+    const checkRole = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        router.push('/login')
+        return
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+
+      if (profile?.role !== 'pr') {
+        router.push('/') // Rimbalza i Clubber alla Home
+      } else {
+        setLoading(false) // Solo se è PR permette di vedere il form
+      }
+    }
+    checkRole()
+  }, [router])
+
   const getCoordinates = async (address: string) => {
     try {
       const response = await fetch(
@@ -43,24 +67,33 @@ export default function AggiungiEvento() {
         price: parseFloat(formData.price),
         lat: coords.lat,
         lng: coords.lng,
-        date: new Date(formData.date).toISOString() // Formattazione corretta per DB
+        date: new Date(formData.date).toISOString()
       }
     ])
 
     if (error) {
       alert("Errore: " + error.message)
+      setLoading(false)
     } else {
       router.push('/')
       router.refresh()
     }
-    setLoading(false)
+  }
+
+  // Se sta controllando il ruolo, mostriamo un caricamento nero
+  if (loading && formData.title === '') {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#ccff00] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
   }
 
   return (
-    <main className="min-h-screen bg-black text-white p-6 pt-24">
+    <main className="min-h-screen bg-black text-white p-6 pt-32">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 max-w-7xl mx-auto">
         
-        {/* COLONNA FORM (7/12) */}
+        {/* COLONNA FORM */}
         <form onSubmit={handleSubmit} className="lg:col-span-7 space-y-6 bg-zinc-900/30 p-8 md:p-12 rounded-[3rem] border border-zinc-800 shadow-2xl">
           <div className="flex items-center gap-4 mb-4">
             <div className="w-1 h-8 bg-[#ccff00]" />
@@ -88,9 +121,9 @@ export default function AggiungiEvento() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest ml-2">Dettagli dell&apos;Evento (Descrizione)</label>
-            <textarea required rows={4} className="w-full bg-black border border-zinc-800 p-4 rounded-2xl focus:border-[#ccff00] outline-none text-white transition-all resize-none text-sm leading-relaxed"
-              placeholder="Descrivi l'atmosfera, il target e la musica..." onChange={(e) => setFormData({...formData, description: e.target.value})} />
+            <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest ml-2">Descrizione</label>
+            <textarea required rows={4} className="w-full bg-black border border-zinc-800 p-4 rounded-2xl focus:border-[#ccff00] outline-none text-white transition-all resize-none text-sm"
+              placeholder="Descrivi l'evento..." onChange={(e) => setFormData({...formData, description: e.target.value})} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -100,46 +133,40 @@ export default function AggiungiEvento() {
                 placeholder="https://..." onChange={(e) => setFormData({...formData, image_url: e.target.value})} />
             </div>
             <div className="space-y-2">
-            <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest ml-2">Vibe / Categoria</label>
-            <select 
-                className="w-full bg-black border border-zinc-800 p-4 rounded-2xl focus:border-[#ccff00] outline-none text-white transition-all appearance-none cursor-pointer"
-                onChange={(e) => setFormData({...formData, category: e.target.value})}
-            >
+              <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest ml-2">Categoria</label>
+              <select className="w-full bg-black border border-zinc-800 p-4 rounded-2xl focus:border-[#ccff00] text-white"
+                onChange={(e) => setFormData({...formData, category: e.target.value})}>
                 <option value="Techno">TECHNO</option>
                 <option value="House">HOUSE</option>
                 <option value="Reggaeton">REGGAETON</option>
                 <option value="Hip Hop">HIP HOP</option>
-                <option value="Gala">GALA / ELEGANT</option>
-                <option value="Rooftop">ROOFTOP</option>
-            </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest ml-2">Prezzo Ingresso (€)</label>
-              <input type="number" required className="w-full bg-black border border-zinc-800 p-4 rounded-2xl focus:border-[#ccff00] outline-none text-[#ccff00] font-black text-xl"
-                placeholder="30" onChange={(e) => setFormData({...formData, price: e.target.value})} />
+                <option value="Gala">GALA</option>
+              </select>
             </div>
           </div>
 
-          <button disabled={loading} className="w-full bg-[#ccff00] text-black font-black py-6 rounded-[2rem] uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_30px_rgba(204,255,0,0.2)] disabled:opacity-50 mt-4">
-            {loading ? 'CALCOLO RADAR IN CORSO...' : 'PUBBLICA ORA'}
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest ml-2">Prezzo Ingresso (€)</label>
+            <input type="number" required className="w-full bg-black border border-zinc-800 p-4 rounded-2xl focus:border-[#ccff00] outline-none text-[#ccff00] font-black text-xl"
+              placeholder="30" onChange={(e) => setFormData({...formData, price: e.target.value})} />
+          </div>
+
+          <button disabled={loading} className="w-full bg-[#ccff00] text-black font-black py-6 rounded-[2rem] uppercase tracking-[0.2em] hover:bg-white transition-all disabled:opacity-50 mt-4">
+            {loading ? 'CARICAMENTO...' : 'PUBBLICA ORA'}
           </button>
         </form>
 
-        {/* COLONNA ANTEPRIMA (5/12) */}
-        <div className="lg:col-span-5 hidden lg:block sticky top-24">
+        {/* COLONNA ANTEPRIMA */}
+        <div className="lg:col-span-5 hidden lg:block sticky top-32">
           <div className="space-y-4">
             <p className="text-[10px] uppercase font-black text-zinc-600 tracking-[0.4em] ml-6">Live Preview</p>
             <div className="relative group w-full aspect-[4/5] bg-zinc-900 rounded-[3.5rem] overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center">
               {formData.image_url ? (
                 <>
-                  <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" 
-                    onError={(e) => {(e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x1200?text=Invalid+Link'}} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                  
+                  <img src={formData.image_url} alt="Preview" className="w-full h-full object-cover opacity-70 transition-transform" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
                   <div className="absolute bottom-12 left-12 right-12 space-y-4">
-                    <div className="bg-[#ccff00] text-black text-[9px] font-black px-3 py-1 rounded-full inline-block uppercase italic">Preview Mode</div>
-                    <h2 className="text-5xl font-black italic text-white uppercase tracking-tighter leading-none">{formData.title || "TITOLO EVENTO"}</h2>
-                    <p className="text-zinc-400 text-sm line-clamp-2 italic">{formData.description || "Inizia a scrivere la descrizione per vederla qui..."}</p>
+                    <h2 className="text-5xl font-black italic text-white uppercase tracking-tighter leading-none">{formData.title || "TITOLO"}</h2>
                     <div className="flex justify-between items-end pt-4 border-t border-white/10">
                        <p className="text-white font-bold uppercase text-[10px] tracking-widest">{formData.location || "LOCATION"}</p>
                        <p className="text-[#ccff00] font-black text-3xl italic">{formData.price ? `€${formData.price}` : "€--"}</p>
@@ -147,15 +174,11 @@ export default function AggiungiEvento() {
                   </div>
                 </>
               ) : (
-                <div className="text-center p-12 space-y-4">
-                  <div className="w-16 h-16 bg-zinc-800 rounded-full mx-auto animate-pulse flex items-center justify-center text-3xl">🖼️</div>
-                  <p className="text-zinc-600 font-black italic uppercase text-lg leading-tight">Incolla un URL Immagine<br/>per attivare il radar</p>
-                </div>
+                <div className="text-center p-12 text-zinc-600 font-black uppercase italic text-lg">Incolla URL Immagine</div>
               )}
             </div>
           </div>
         </div>
-
       </div>
     </main>
   )
