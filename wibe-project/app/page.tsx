@@ -3,17 +3,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export default async function Home() {
-  // Peschiamo i dati dalla tabella 'Events' (con la E maiuscola)
+  // Peschiamo i dati dalla tabella 'Events'
   const { data: events, error } = await supabase
     .from('Events')
     .select('*')
-    .order('created_at', { ascending: false }); // Mostra i più recenti per primi
+    .order('created_at', { ascending: false });
 
   if (error) {
     return (
       <main className="min-h-screen bg-black text-white p-8">
-        <h1 className="text-[#ccff00] text-2xl font-bold">Errore di connessione</h1>
-        <p className="text-zinc-500">{error.message}</p>
+        <h1 className="text-[#ccff00] text-2xl font-bold uppercase tracking-tighter">Connection Error</h1>
+        <p className="text-zinc-500 font-mono mt-2">{error.message}</p>
       </main>
     );
   }
@@ -21,75 +21,75 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-black text-white p-8">
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-12 text-center">
-        <h1 className="text-6xl font-black text-[#ccff00] tracking-tighter italic">
+      <div className="max-w-7xl mx-auto mb-20 mt-10 text-center">
+        <h1 className="text-7xl md:text-9xl font-black text-[#ccff00] tracking-tighter italic leading-none">
           WIBE <span className="text-white">EVENTS</span>
         </h1>
-        <p className="text-zinc-500 mt-2 uppercase tracking-[0.2em] text-sm">
-          Scopri i migliori club e le serate più esclusive
+        <p className="text-zinc-500 mt-6 uppercase tracking-[0.4em] text-[10px] font-bold">
+          The most exclusive nights in the palm of your hand
         </p>
       </div>
 
       {/* Grid Eventi */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         {events?.length === 0 ? (
-          <div className="col-span-full text-center py-20 border border-dashed border-zinc-800 rounded-3xl">
-            <p className="text-zinc-500">Nessun evento in programma. Pubblicane uno!</p>
+          <div className="col-span-full text-center py-32 border border-dashed border-zinc-800 rounded-[3rem]">
+            <p className="text-zinc-600 uppercase tracking-widest text-xs font-bold">No events scheduled. Be the first to publish.</p>
           </div>
         ) : (
           events?.map((evento) => (
-            <div 
+            <Link 
+              href={`/evento/${evento.id}`}
               key={evento.id} 
-              className="group bg-zinc-900/40 border border-zinc-800 rounded-3xl overflow-hidden hover:border-[#ccff00] transition-all duration-500"
+              className="group bg-zinc-900/20 border border-zinc-800/50 rounded-[2.5rem] overflow-hidden hover:border-[#ccff00]/50 hover:bg-zinc-900/40 transition-all duration-500 shadow-2xl"
             >
-              {/* Contenitore Immagine */}
-              <div className="relative h-64 w-full overflow-hidden bg-zinc-800">
+              {/* Contenitore Immagine Blindato */}
+              <div className="relative h-80 w-full overflow-hidden bg-zinc-900">
                 {evento.image_url ? (
-                  <Image 
+                  <img 
                     src={evento.image_url} 
                     alt={evento.title} 
-                    width={500} // Aggiungi una larghezza indicativa
-                    height={300} // Aggiungi un'altezza indicativa
-                    unoptimized // Necessario per link esterni non configurati
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-700 italic">
+                  <div className="w-full h-full flex items-center justify-center text-zinc-800 font-black italic uppercase">
                     No Cover
                   </div>
                 )}
+                
                 {/* Badge Prezzo */}
-                <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-md text-[#ccff00] px-3 py-1 rounded-full font-bold border border-[#ccff00]/30">
+                <div className="absolute top-6 right-6 bg-black/60 backdrop-blur-xl text-[#ccff00] px-4 py-2 rounded-2xl font-black border border-white/5 shadow-xl text-lg italic">
                   {evento.price}€
                 </div>
+
+                {/* Overlay sfumato inferiore */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
               </div>
 
               {/* Dettagli Evento */}
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-2">
-                  <h2 className="text-2xl font-bold tracking-tight text-white group-hover:text-[#ccff00] transition-colors">
+              <div className="p-8">
+                <div className="mb-4">
+                  <h2 className="text-3xl font-black italic tracking-tighter text-white group-hover:text-[#ccff00] transition-colors uppercase leading-none">
                     {evento.title}
                   </h2>
                 </div>
                 
-                <p className="text-zinc-400 text-sm line-clamp-2 mb-6 h-10">
-                  {evento.description || "Nessuna descrizione disponibile per questo evento."}
+                <p className="text-zinc-500 text-sm line-clamp-2 mb-8 font-light italic leading-relaxed">
+                  {evento.description || "No description provided for this event."}
                 </p>
 
-                <div className="flex items-center justify-between pt-4 border-t border-zinc-800">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase text-zinc-500 font-bold tracking-widest">Location</span>
-                    <span className="text-white font-medium">{evento.location}</span>
+                <div className="flex items-center justify-between pt-6 border-t border-zinc-800/50">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[9px] uppercase text-[#ccff00] font-black tracking-[0.2em]">Location</span>
+                    <span className="text-white font-bold text-sm uppercase italic tracking-tight">{evento.location}</span>
                   </div>
-                  <Link 
-                    href={`/evento/${evento.id}`} 
-                    className="bg-white text-black text-xs font-black px-4 py-2 rounded-lg hover:bg-[#ccff00] transition-colors uppercase tracking-tighter inline-block text-center"
-                  >
-                    Tickets
-                  </Link>
+                  
+                  <div className="bg-white text-black text-[10px] font-black px-5 py-2.5 rounded-full group-hover:bg-[#ccff00] transition-colors uppercase tracking-widest">
+                    Details
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))
         )}
       </div>
