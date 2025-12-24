@@ -1,124 +1,123 @@
-'use client'; 
-
-import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+'use client'
+import { useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
 export default function AggiungiEvento() {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [location, setLocation] = useState('');
-  const [imageUrl, setImageUrl] = useState(''); // Stato per l'URL dell'immagine
-  
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    location: '', // Indirizzo testuale (es. Via Torino 1, Milano)
+    price: '',
+    image_url: ''
+  })
+
+  // FUNZIONE PER TRASFORMARE INDIRIZZO IN COORDINATE
+  const getCoordinates = async (address: string) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`
+      )
+      const data = await response.json()
+      if (data && data.length > 0) {
+        return {
+          lat: parseFloat(data[0].lat),
+          lng: parseFloat(data[0].lon)
+        }
+      }
+      return { lat: 45.4642, lng: 9.1900 } // Default su Milano se non trova nulla
+    } catch (error) {
+      console.error("Errore geocoding:", error)
+      return { lat: 45.4642, lng: 9.1900 }
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
-    // Inseriamo i dati nella tabella (usiamo 'Events' con la E maiuscola come da tuo DB)
+    e.preventDefault()
+    setLoading(true)
+
+    // 1. Recupera le coordinate dall'indirizzo inserito
+    const coords = await getCoordinates(formData.location)
+
+    // 2. Salva su Supabase
     const { error } = await supabase.from('Events').insert([
       { 
-        title, 
-        description, 
-        price: parseInt(price), 
-        location,
-        image_url: imageUrl, // Inserimento dell'URL immagine
-        date: new Date().toISOString() 
+        title: formData.title,
+        description: formData.description,
+        location: formData.location,
+        price: parseFloat(formData.price),
+        image_url: formData.image_url,
+        lat: coords.lat,
+        lng: coords.lng
       }
-    ]);
+    ])
 
     if (error) {
-      alert("Errore nell'inserimento: " + error.message);
-      setLoading(false);
+      alert("Errore nel salvataggio: " + error.message)
     } else {
-      alert("Evento creato con successo!");
-      router.push('/'); 
-      router.refresh();
+      alert("Evento creato con successo sul Radar!")
+      router.push('/')
+      router.refresh()
     }
-  };
+    setLoading(false)
+  }
 
   return (
-    <main className="min-h-screen bg-black text-white p-8 flex flex-col items-center">
-      <h1 className="text-[#ccff00] text-3xl font-bold mb-8 italic tracking-tighter">
-        PUBBLICA EVENTO <span className="text-white">WIBE</span>
-      </h1>
-      
-      <form onSubmit={handleSubmit} className="w-full max-w-md bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-2xl">
-        
-        {/* Preview Immagine Dinamica */}
-        {imageUrl && (
-          <div className="mb-6 w-full h-40 rounded-lg overflow-hidden border border-zinc-700">
-            <Image 
-            src={imageUrl} 
-            alt="Preview" 
-            fill // Fa sì che l'immagine riempia il contenitore
-            unoptimized // Fondamentale per vedere l'anteprima di link esterni subito
-            className="object-cover" 
+    <main className="min-h-screen bg-black text-white p-8 flex items-center justify-center">
+      <form onSubmit={handleSubmit} className="max-w-xl w-full space-y-6 bg-zinc-900/50 p-10 rounded-[2.5rem] border border-zinc-800">
+        <h1 className="text-4xl font-black italic text-[#ccff00] tracking-tighter uppercase text-center mb-8">
+          Nuovo Evento
+        </h1>
+
+        <div>
+          <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest ml-2">Nome Evento</label>
+          <input 
+            required
+            className="w-full bg-black border border-zinc-800 p-4 rounded-2xl mt-1 focus:border-[#ccff00] outline-none transition-all"
+            placeholder="es. TECHNO NIGHT"
+            onChange={(e) => setFormData({...formData, title: e.target.value})}
+          />
+        </div>
+
+        <div>
+          <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest ml-2">Indirizzo / Locale</label>
+          <input 
+            required
+            className="w-full bg-black border border-zinc-800 p-4 rounded-2xl mt-1 focus:border-[#ccff00] outline-none transition-all"
+            placeholder="es. Via Pantano 15, Milano"
+            onChange={(e) => setFormData({...formData, location: e.target.value})}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest ml-2">Prezzo (€)</label>
+            <input 
+              type="number"
+              className="w-full bg-black border border-zinc-800 p-4 rounded-2xl mt-1 focus:border-[#ccff00] outline-none transition-all"
+              placeholder="20"
+              onChange={(e) => setFormData({...formData, price: e.target.value})}
             />
           </div>
-        )}
-
-        <div className="mb-4">
-          <label className="block text-xs uppercase font-bold text-zinc-500 mb-1">Nome Evento</label>
-          <input 
-            type="text" value={title} onChange={(e) => setTitle(e.target.value)}
-            className="w-full bg-black border border-zinc-700 p-3 rounded-xl text-white focus:border-[#ccff00] outline-none transition-all"
-            placeholder="Esempio: Techno Night"
-            required 
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-xs uppercase font-bold text-zinc-500 mb-1">Descrizione</label>
-          <textarea 
-            value={description} onChange={(e) => setDescription(e.target.value)}
-            className="w-full bg-black border border-zinc-700 p-3 rounded-xl text-white focus:border-[#ccff00] outline-none h-24 resize-none"
-            placeholder="Racconta la vibe della serata..."
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-xs uppercase font-bold text-zinc-500 mb-1">URL Locandina (Link Immagine)</label>
-          <input 
-            type="text" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="https://immagine-disco.jpg"
-            className="w-full bg-black border border-zinc-700 p-3 rounded-xl text-white focus:border-[#ccff00] outline-none transition-all"
-          />
-        </div>
-
-        <div className="flex gap-4 mb-8">
-          <div className="w-1/2">
-            <label className="block text-xs uppercase font-bold text-zinc-500 mb-1">Prezzo (€)</label>
+          <div>
+            <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-widest ml-2">URL Immagine</label>
             <input 
-              type="number" value={price} onChange={(e) => setPrice(e.target.value)}
-              className="w-full bg-black border border-zinc-700 p-3 rounded-xl text-white focus:border-[#ccff00] outline-none"
-              placeholder="0"
-            />
-          </div>
-          <div className="w-1/2">
-            <label className="block text-xs uppercase font-bold text-zinc-500 mb-1">Locale</label>
-            <input 
-              type="text" value={location} onChange={(e) => setLocation(e.target.value)}
-              className="w-full bg-black border border-zinc-700 p-3 rounded-xl text-white focus:border-[#ccff00] outline-none"
-              placeholder="Nome Club"
+              className="w-full bg-black border border-zinc-800 p-4 rounded-2xl mt-1 focus:border-[#ccff00] outline-none transition-all"
+              placeholder="https://..."
+              onChange={(e) => setFormData({...formData, image_url: e.target.value})}
             />
           </div>
         </div>
 
         <button 
-          type="submit" 
           disabled={loading}
-          className={`w-full font-black py-4 rounded-2xl transition-all uppercase italic tracking-widest ${
-            loading ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-[#ccff00] text-black hover:bg-white'
-          }`}
+          className="w-full bg-[#ccff00] text-black font-black py-5 rounded-2xl uppercase tracking-widest hover:bg-white transition-all shadow-lg mt-4 disabled:opacity-50"
         >
-          {loading ? 'Pubblicazione...' : 'Metti in lista'}
+          {loading ? 'Calcolo posizione...' : 'Pubblica nel Radar'}
         </button>
       </form>
     </main>
-  );
+  )
 }
