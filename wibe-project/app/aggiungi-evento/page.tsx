@@ -12,7 +12,8 @@ export default function AggiungiEvento() {
     location: '',
     date: '', // Nuovo campo Data e Ora
     price: '',
-    image_url: ''
+    image_url: '',
+    category: 'Techno',
   })
 
   // Geocoding per trasformare indirizzo in coordinate
@@ -98,7 +99,20 @@ export default function AggiungiEvento() {
               <input required className="w-full bg-black border border-zinc-800 p-4 rounded-2xl focus:border-[#ccff00] outline-none text-white transition-all"
                 placeholder="https://..." onChange={(e) => setFormData({...formData, image_url: e.target.value})} />
             </div>
-
+            <div className="space-y-2">
+            <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest ml-2">Vibe / Categoria</label>
+            <select 
+                className="w-full bg-black border border-zinc-800 p-4 rounded-2xl focus:border-[#ccff00] outline-none text-white transition-all appearance-none cursor-pointer"
+                onChange={(e) => setFormData({...formData, category: e.target.value})}
+            >
+                <option value="Techno">TECHNO</option>
+                <option value="House">HOUSE</option>
+                <option value="Reggaeton">REGGAETON</option>
+                <option value="Hip Hop">HIP HOP</option>
+                <option value="Gala">GALA / ELEGANT</option>
+                <option value="Rooftop">ROOFTOP</option>
+            </select>
+            </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-zinc-500 tracking-widest ml-2">Prezzo Ingresso (€)</label>
               <input type="number" required className="w-full bg-black border border-zinc-800 p-4 rounded-2xl focus:border-[#ccff00] outline-none text-[#ccff00] font-black text-xl"

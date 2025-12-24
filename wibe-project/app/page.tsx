@@ -40,7 +40,7 @@ export default async function Home() {
         {/* Usiamo MapWrapper che gestisce internamente il caricamento dinamico e ssr:false */}
         <MapWrapper events={events || []} />
       </div>
-
+    
       {/* Grid Eventi */}
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center gap-4 mb-10 ml-4">
