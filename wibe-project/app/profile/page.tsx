@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import QRCodeGenerator from '@/components/QRCodeGenerator';
 
 interface EventData {
   title: string;
@@ -135,8 +136,11 @@ export default async function ProfilePage() {
                     <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{t.event.location} — {new Date(t.event.date).toLocaleDateString()}</p>
                   </div>
                 </div>
-                <div className="bg-white p-3 rounded-2xl shrink-0 shadow-xl">
-                  <div className="w-12 h-12 border-2 border-black flex items-center justify-center font-black text-[10px] text-black italic">QR</div>
+               <div className="shrink-0 group-hover:rotate-6 transition-transform duration-500">
+                <QRCodeGenerator 
+                    value={`wibe-pass-${t.id}`} 
+                    size={64} 
+                />
                 </div>
               </div>
             ))
