@@ -24,15 +24,16 @@ export default function Navbar() {
   }, [])
 
   const handleLogout = async (e: React.MouseEvent) => {
-    e.preventDefault() // Evita che il click propaghi al link del profilo
+    e.preventDefault()
     await supabase.auth.signOut()
     router.push('/login')
     router.refresh()
   }
 
   return (
-    <nav className="border-b border-zinc-800 bg-black/50 backdrop-blur-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    /* MODIFICA 1: z-[100] per stare sopra la mappa e fixed invece di sticky per evitare buchi bianchi */
+    <nav className="fixed top-0 left-0 right-0 z-[100] border-b border-zinc-800/50 bg-black/60 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         
         {/* LOGO */}
         <Link href="/" className="text-[#ccff00] font-black text-2xl tracking-tighter hover:scale-105 transition-transform">
@@ -41,48 +42,47 @@ export default function Navbar() {
         
         <div className="flex gap-6 items-center">
           {/* LINK EVENTI */}
-          <Link href="/" className="text-sm font-medium text-zinc-400 hover:text-[#ccff00] transition-colors">
+          <Link href="/" className="text-sm font-black uppercase tracking-widest text-zinc-400 hover:text-[#ccff00] transition-colors">
             Eventi
           </Link>
           
           {/* TASTO PUBBLICA */}
           <Link 
             href="/aggiungi-evento" 
-            className="bg-[#ccff00] text-black px-5 py-2 rounded-full font-bold text-xs uppercase tracking-tighter hover:bg-white transition-all shadow-[0_0_15px_rgba(204,255,0,0.2)]"
+            className="bg-[#ccff00] text-black px-5 py-2.5 rounded-full font-black text-[10px] uppercase tracking-tighter hover:bg-white transition-all shadow-[0_0_20px_rgba(204,255,0,0.15)]"
           >
             + Pubblica
           </Link>
 
           {/* SEZIONE UTENTE / LOGIN */}
           {user ? (
-            <div className="flex items-center gap-4 pl-4 border-l border-zinc-800">
-              {/* Link testuale al profilo */}
-              <Link href="/profile" className="flex flex-col items-end group cursor-pointer">
-                <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest group-hover:text-[#ccff00] transition-colors">Il mio Profilo</span>
-                <span className="text-xs font-medium text-white group-hover:text-zinc-300 transition-colors">{user.email?.split('@')[0]}</span>
+            <div className="flex items-center gap-4 pl-6 border-l border-zinc-800/50">
+              <Link href="/profile" className="hidden md:flex flex-col items-end group cursor-pointer">
+                <span className="text-[9px] text-zinc-500 font-black uppercase tracking-[0.2em] group-hover:text-[#ccff00] transition-colors">Member</span>
+                <span className="text-xs font-bold text-white group-hover:text-zinc-300 transition-colors lowercase italic">{user.email?.split('@')[0]}</span>
               </Link>
               
-              {/* AVATAR CLICCABILE */}
+              {/* AVATAR */}
               <div className="relative group">
                 <Link 
                   href="/profile"
-                  className="w-10 h-10 bg-gradient-to-tr from-[#ccff00] to-green-500 rounded-full flex items-center justify-center text-black font-black text-sm shadow-lg hover:scale-110 transition-transform active:scale-95 cursor-pointer"
+                  className="w-11 h-11 bg-gradient-to-tr from-[#ccff00] to-green-400 rounded-full flex items-center justify-center text-black font-black text-sm shadow-lg hover:scale-105 transition-all active:scale-95 border-2 border-transparent hover:border-white/20"
                 >
                   {user.email?.[0].toUpperCase()}
                 </Link>
                 
-                {/* MENU DROP DOWN LOGOUT (appare al hover sull'avatar) */}
+                {/* MENU DROP DOWN LOGOUT */}
                 <button 
                   onClick={handleLogout}
-                  className="absolute -bottom-10 right-0 bg-zinc-900 border border-zinc-800 text-red-500 text-[10px] px-3 py-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-black uppercase tracking-tighter hover:bg-red-500 hover:text-white"
+                  className="absolute -bottom-12 right-0 bg-white text-black text-[10px] px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all font-black uppercase tracking-tighter hover:bg-[#ccff00] whitespace-nowrap"
                 >
-                  Logout
+                  Sign Out
                 </button>
               </div>
             </div>
           ) : (
-            <Link href="/login" className="text-sm font-bold text-[#ccff00] border border-[#ccff00] px-4 py-2 rounded-full hover:bg-[#ccff00] hover:text-black transition-all">
-              Accedi
+            <Link href="/login" className="text-[10px] font-black uppercase tracking-widest text-[#ccff00] border border-[#ccff00]/30 px-6 py-2.5 rounded-full hover:bg-[#ccff00] hover:text-black transition-all">
+              Login
             </Link>
           )}
         </div>

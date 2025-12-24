@@ -20,22 +20,18 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="it">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}>
-        
-        {/* Usiamo il componente Navbar che abbiamo creato prima */}
+    <html lang="it" className="bg-black"> {/* Forza il nero qui */}
+      <body className="bg-black antialiased text-white">
         <Navbar />
-
-        {/* IL CONTENUTO DELLE PAGINE */}
-        <main className="min-screen">
+        {/* Assicurati che non ci siano margini bianchi qui */}
+        <main className="min-h-screen bg-black">
           {children}
         </main>
-
       </body>
     </html>
-  );
+  )
 }
