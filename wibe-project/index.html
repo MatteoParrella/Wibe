@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ── SEO ── -->
+  <title>WIBE — Exclusive Events | La notte più esclusiva della tua città</title>
+  <meta name="description" content="Scopri, prenota e vivi gli eventi notturni più esclusivi della tua città. Techno, House, Reggaeton e molto altro. Accesso rapido con il tuo WIBE Pass.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://wibe.events/">
+
+  <!-- ── Open Graph ── -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://wibe.events/">
+  <meta property="og:title"       content="WIBE — Exclusive Events">
+  <meta property="og:description" content="Le notti più esclusive della tua città, nel palmo della mano. Scopri, prenota, vivi.">
+  <meta property="og:image"       content="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&q=80">
+
+  <!-- ── Twitter Card ── -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="WIBE — Exclusive Events">
+  <meta name="twitter:description" content="Le notti più esclusive della tua città, nel palmo della mano.">
+  <meta name="twitter:image"       content="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&q=80">
+
+  <!-- ── Fonts ── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,700;1,300;1,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+  <!-- NAVBAR -->
+  <nav role="navigation" aria-label="Navigazione principale">
+    <a href="#" class="nav-logo" aria-label="WIBE — Home">WIBE</a>
+    <ul class="nav-links">
+      <li><a href="#events">Radar</a></li>
+      <li><a href="#map">Mappa</a></li>
+      <li><a href="#featured">Featured</a></li>
+      <li><a href="#" class="nav-cta">Login</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero" role="banner">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="hero-eyebrow">Il futuro della notte è qui</div>
+    <h1 class="hero-title">
+      WIBE<br>
+      <span>EVENTS</span>
+    </h1>
+    <div class="hero-bottom">
+      <p class="hero-desc">
+        Le notti più esclusive della tua città, nel palmo della mano. Scopri, prenota, vivi.
+      </p>
+      <div class="hero-stats" aria-label="Statistiche piattaforma">
+        <div class="stat">
+          <div class="stat-num">48</div>
+          <div class="stat-label">Events Live</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">12K</div>
+          <div class="stat-label">Members</div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-section" aria-hidden="true">
+    <div class="marquee-track">
+      <div class="marquee-item"><span>Techno</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>House</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Reggaeton</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Hip Hop</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Gala</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Underground</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Techno</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>House</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Reggaeton</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Hip Hop</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Gala</span><div class="marquee-dot"></div></div>
+      <div class="marquee-item"><span>Underground</span><div class="marquee-dot"></div></div>
+    </div>
+  </div>
+
+  <!-- EVENTS SECTION -->
+  <section id="events" aria-labelledby="events-heading">
+    <div class="section-header reveal">
+      <div>
+        <div class="section-label">Upcoming Experiences</div>
+        <h2 class="section-title" id="events-heading">EVENTI<br>IN ARRIVO</h2>
+      </div>
+      <div class="filter-bar" style="margin-bottom:0" role="group" aria-label="Filtra per genere">
+        <button class="filter-btn active" onclick="filterEvents(this,'all')" aria-pressed="true">Tutti</button>
+        <button class="filter-btn" onclick="filterEvents(this,'techno')" aria-pressed="false">Techno</button>
+        <button class="filter-btn" onclick="filterEvents(this,'house')" aria-pressed="false">House</button>
+        <button class="filter-btn" onclick="filterEvents(this,'reggaeton')" aria-pressed="false">Reggaeton</button>
+      </div>
+    </div>
+
+    <div class="search-wrap reveal">
+      <label for="event-search" class="sr-only">Cerca evento o location</label>
+      <input
+        type="search"
+        id="event-search"
+        placeholder="Cerca evento o location..."
+        oninput="searchEvents(this.value)"
+        autocomplete="off"
+        aria-label="Cerca evento o location"
+      >
+      <span class="search-icon" aria-hidden="true">⌕</span>
+    </div>
+
+    <div class="events-grid reveal" id="eventsGrid" role="list" aria-label="Lista eventi">
+
+      <!-- Card 1 — FEATURED (grande) -->
+      <article class="event-card" role="listitem" data-cat="techno" tabindex="0"
+               onclick="openModal('SUBCULTURE','15 APR 2026','Fabric, Milano')"
+               onkeydown="if(event.key==='Enter')openModal('SUBCULTURE','15 APR 2026','Fabric, Milano')"
+               aria-label="SUBCULTURE — 15 Aprile 2026, Fabric Milano">
+        <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=80"
+             alt="Subculture Milano — evento techno al Fabric"
+             width="800" height="1067">
+        <div class="event-card-overlay">
+          <div class="event-card-top">
+            <span class="event-tag">Techno</span>
+            <span class="event-price">25€</span>
+          </div>
+          <div class="event-title">SUBCULTURE<br>MILANO</div>
+          <div class="event-meta">
+            <span>15 Apr</span>
+            <span>Fabric, MI</span>
+          </div>
+        </div>
+        <div class="event-card-actions">
+          <a href="#" class="btn-view"
+             onclick="event.stopPropagation(); openModal('SUBCULTURE','15 APR 2026','Fabric, Milano')"
+             aria-label="Ottieni pass per SUBCULTURE">Ottieni Pass</a>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="event-card" role="listitem" data-cat="house" tabindex="0"
+               onclick="openModal('PARADISE','18 APR 2026','VOLT, Torino')"
+               onkeydown="if(event.key==='Enter')openModal('PARADISE','18 APR 2026','VOLT, Torino')"
+               aria-label="PARADISE — 18 Aprile 2026, VOLT Torino">
+        <img src="https://images.unsplash.com/photo-1598387181032-a3103a2db5b3?w=600&q=80"
+             alt="Paradise — house music al VOLT di Torino"
+             width="600" height="800"
+             loading="lazy">
+        <div class="event-card-overlay">
+          <div class="event-card-top">
+            <span class="event-tag">House</span>
+            <span class="event-price">20€</span>
+          </div>
+          <div class="event-title">PARADISE</div>
+          <div class="event-meta">
+            <span>18 Apr</span>
+            <span>VOLT, TO</span>
+          </div>
+        </div>
+        <div class="event-card-actions">
+          <a href="#" class="btn-view"
+             onclick="event.stopPropagation(); openModal('PARADISE','18 APR 2026','VOLT, Torino')"
+             aria-label="Ottieni pass per PARADISE">Ottieni Pass</a>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="event-card" role="listitem" data-cat="reggaeton" tabindex="0"
+               onclick="openModal('CALIENTE','22 APR 2026','Alcatraz, MI')"
+               onkeydown="if(event.key==='Enter')openModal('CALIENTE','22 APR 2026','Alcatraz, MI')"
+               aria-label="CALIENTE — 22 Aprile 2026, Alcatraz Milano">
+        <img src="https://images.unsplash.com/photo-1540039155733-5bb30b4f84e3?w=600&q=80"
+             alt="Caliente — reggaeton all'Alcatraz di Milano"
+             width="600" height="800"
+             loading="lazy">
+        <div class="event-card-overlay">
+          <div class="event-card-top">
+            <span class="event-tag">Reggaeton</span>
+            <span class="event-price">15€</span>
+          </div>
+          <div class="event-title">CALIENTE</div>
+          <div class="event-meta">
+            <span>22 Apr</span>
+            <span>Alcatraz, MI</span>
+          </div>
+        </div>
+        <div class="event-card-actions">
+          <a href="#" class="btn-view"
+             onclick="event.stopPropagation(); openModal('CALIENTE','22 APR 2026','Alcatraz, MI')"
+             aria-label="Ottieni pass per CALIENTE">Ottieni Pass</a>
+        </div>
+      </article>
+
+      <!-- Card 4 -->
+      <article class="event-card" role="listitem" data-cat="techno" tabindex="0"
+               onclick="openModal('VOID','28 APR 2026','Tresor, MI')"
+               onkeydown="if(event.key==='Enter')openModal('VOID','28 APR 2026','Tresor, MI')"
+               aria-label="VOID — 28 Aprile 2026, Tresor Milano">
+        <img src="https://images.unsplash.com/photo-1571266028243-d220c6a6fe7e?w=600&q=80"
+             alt="Void — techno underground al Tresor di Milano"
+             width="600" height="800"
+             loading="lazy">
+        <div class="event-card-overlay">
+          <div class="event-card-top">
+            <span class="event-tag">Techno</span>
+            <span class="event-price">30€</span>
+          </div>
+          <div class="event-title">VOID</div>
+          <div class="event-meta">
+            <span>28 Apr</span>
+            <span>Tresor, MI</span>
+          </div>
+        </div>
+        <div class="event-card-actions">
+          <a href="#" class="btn-view"
+             onclick="event.stopPropagation(); openModal('VOID','28 APR 2026','Tresor, MI')"
+             aria-label="Ottieni pass per VOID">Ottieni Pass</a>
+        </div>
+      </article>
+
+      <!-- Card 5 -->
+      <article class="event-card" role="listitem" data-cat="house" tabindex="0"
+               onclick="openModal('SOLEIL','1 MAG 2026','Amnesia, MI')"
+               onkeydown="if(event.key==='Enter')openModal('SOLEIL','1 MAG 2026','Amnesia, MI')"
+               aria-label="SOLEIL — 1 Maggio 2026, Amnesia Milano">
+        <img src="https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=600&q=80"
+             alt="Soleil — house music all'Amnesia di Milano"
+             width="600" height="800"
+             loading="lazy">
+        <div class="event-card-overlay">
+          <div class="event-card-top">
+            <span class="event-tag">House</span>
+            <span class="event-price">18€</span>
+          </div>
+          <div class="event-title">SOLEIL</div>
+          <div class="event-meta">
+            <span>1 Mag</span>
+            <span>Amnesia, MI</span>
+          </div>
+        </div>
+        <div class="event-card-actions">
+          <a href="#" class="btn-view"
+             onclick="event.stopPropagation(); openModal('SOLEIL','1 MAG 2026','Amnesia, MI')"
+             aria-label="Ottieni pass per SOLEIL">Ottieni Pass</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- MAP SECTION -->
+  <div class="map-section reveal" id="map">
+    <div class="section-header" style="margin-bottom:32px">
+      <div class="section-label">Live Event Radar</div>
+    </div>
+    <div class="map-container">
+      <iframe
+        src="https://www.openstreetmap.org/export/embed.html?bbox=9.0%2C45.3%2C9.4%2C45.6&layer=mapnik"
+        loading="lazy"
+        title="Mappa eventi WIBE — area Milano"
+        aria-label="Mappa interattiva degli eventi WIBE nella zona di Milano">
+      </iframe>
+      <div class="map-overlay" aria-hidden="true"></div>
+      <div class="map-badge" aria-live="polite">
+        <div class="map-badge-dot" aria-hidden="true"></div>
+        <span>5 eventi attivi in zona</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURED DETAIL -->
+  <div class="detail-section reveal" id="featured">
+    <div class="detail-img">
+      <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=80"
+           alt="SUBCULTURE MILANO — evento techno featured"
+           width="800" height="1000"
+           loading="lazy">
+      <div class="detail-img-badge" aria-label="Conto alla rovescia per l'evento">
+        <div class="countdown" role="timer" aria-label="Tempo all'inizio dell'evento">
+          <div class="countdown-unit">
+            <div class="countdown-num" id="cd-d">--</div>
+            <div class="countdown-label">GG</div>
+          </div>
+          <div class="countdown-unit">
+            <div class="countdown-num" id="cd-h">--</div>
+            <div class="countdown-label">HH</div>
+          </div>
+          <div class="countdown-unit">
+            <div class="countdown-num" id="cd-m">--</div>
+            <div class="countdown-label">MM</div>
+          </div>
+          <div class="countdown-unit">
+            <div class="countdown-num" id="cd-s">--</div>
+            <div class="countdown-label">SS</div>
+          </div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.3em;color:#555">Inizio tra</div>
+      </div>
+    </div>
+
+    <div class="detail-content">
+      <div class="detail-eyebrow">— Featured Event</div>
+      <h2 class="detail-title">SUB<br>CULTURE<br>MILANO</h2>
+      <p class="detail-desc">
+        Una notte senza confini. I migliori artisti underground si incontrano in un'unica location per un'esperienza sonora indimenticabile.
+      </p>
+      <div class="detail-info" role="list" aria-label="Dettagli evento">
+        <div class="detail-info-item" role="listitem">
+          <div class="detail-info-label">Data</div>
+          <div class="detail-info-value">15 Aprile 2026</div>
+        </div>
+        <div class="detail-info-item" role="listitem">
+          <div class="detail-info-label">Ora</div>
+          <div class="detail-info-value">23:00</div>
+        </div>
+        <div class="detail-info-item" role="listitem">
+          <div class="detail-info-label">Location</div>
+          <div class="detail-info-value">Fabric, Milano</div>
+        </div>
+        <div class="detail-info-item" role="listitem">
+          <div class="detail-info-label">Categoria</div>
+          <div class="detail-info-value" style="color:#d4ff00">Techno</div>
+        </div>
+      </div>
+      <div class="detail-price" aria-label="Prezzo biglietto: 25 euro">25€</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:#555;text-transform:uppercase;letter-spacing:0.3em;margin-bottom:24px">Ingresso</div>
+      <a href="#" class="btn-primary"
+         onclick="openModal('SUBCULTURE MILANO','15 APR 2026','Fabric, Milano'); return false;"
+         aria-label="Ottieni il tuo pass per SUBCULTURE MILANO">
+        Ottieni il tuo Pass →
+      </a>
+      <a href="#" class="btn-secondary"
+         onclick="shareEvent('SUBCULTURE MILANO','15 APR 2026','Fabric, Milano'); return false;"
+         aria-label="Condividi l'evento SUBCULTURE MILANO">↗ Condividi Evento</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer role="contentinfo">
+    <div class="footer-logo" aria-label="WIBE">WIBE</div>
+    <div class="footer-copy">© 2026 Wibe — Exclusive Events Platform</div>
+  </footer>
+
+  <!-- TICKET MODAL -->
+  <div class="modal-backdrop" id="modal"
+       onclick="closeModalOutside(event)"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="modal-title"
+       aria-hidden="true">
+    <div class="modal" style="position:relative">
+      <button class="modal-close" onclick="closeModal()" aria-label="Chiudi modal">✕</button>
+
+      <div id="modal-step1">
+        <h2 id="modal-title">PASS</h2>
+        <p id="modal-subtitle">Inserisci i tuoi dati per il check-in</p>
+        <label for="modal-name" class="sr-only">Nome e Cognome</label>
+        <input type="text" id="modal-name" placeholder="Nome e Cognome" maxlength="40"
+               autocomplete="name" aria-required="true" aria-describedby="modal-name-error">
+        <div class="error-msg" id="modal-name-error" role="alert" aria-live="assertive"></div>
+        <a href="#" class="btn-primary" style="margin-top:8px"
+           onclick="generateTicket(); return false;"
+           aria-label="Genera il biglietto">
+          Genera Biglietto
+        </a>
+        <a href="#" class="btn-secondary" onclick="closeModal(); return false;"
+           aria-label="Annulla e chiudi">Annulla</a>
+      </div>
+
+      <div id="modal-step2" style="display:none">
+        <div class="ticket-visual" id="ticketVisual" role="img" aria-label="Il tuo WIBE Pass digitale">
+          <div class="ticket-header">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.4em;color:rgba(212,255,0,0.6);margin-bottom:8px">Official Access Pass</div>
+            <h3 id="ticket-event-name">SUBCULTURE</h3>
+          </div>
+          <div class="ticket-body">
+            <div class="ticket-qr" aria-label="QR code del biglietto">
+              <svg viewBox="0 0 21 21" fill="white" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="0" y="0" width="7" height="7"/><rect x="1" y="1" width="5" height="5" fill="black"/>
+                <rect x="2" y="2" width="3" height="3"/>
+                <rect x="14" y="0" width="7" height="7"/><rect x="15" y="1" width="5" height="5" fill="black"/>
+                <rect x="16" y="2" width="3" height="3"/>
+                <rect x="0" y="14" width="7" height="7"/><rect x="1" y="15" width="5" height="5" fill="black"/>
+                <rect x="2" y="16" width="3" height="3"/>
+                <rect x="9" y="0" width="1" height="3"/><rect x="11" y="0" width="2" height="1"/>
+                <rect x="9" y="4" width="3" height="1"/><rect x="13" y="3" width="1" height="2"/>
+                <rect x="9" y="9" width="3" height="3"/><rect x="13" y="9" width="5" height="1"/>
+                <rect x="9" y="13" width="1" height="5"/><rect x="11" y="14" width="3" height="1"/>
+                <rect x="14" y="13" width="1" height="3"/><rect x="16" y="14" width="2" height="3"/>
+                <rect x="19" y="11" width="2" height="2"/><rect x="12" y="17" width="3" height="2"/>
+                <rect x="17" y="18" width="2" height="2"/><rect x="5" y="9" width="2" height="1"/>
+                <rect x="3" y="10" width="4" height="1"/><rect x="3" y="12" width="2" height="2"/>
+                <rect x="6" y="13" width="1" height="2"/>
+              </svg>
+            </div>
+            <div class="ticket-name" id="ticket-holder">MARCO ROSSI</div>
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:#999;text-transform:uppercase;letter-spacing:0.2em" id="ticket-meta">Fabric, MI — 15 Apr 2026</div>
+          </div>
+          <div class="ticket-sep"></div>
+          <div class="ticket-footer" id="ticket-id">ID: #WIBE-000000</div>
+        </div>
+        <a href="#" class="btn-primary" style="margin-top:24px"
+           onclick="downloadTicket(); return false;"
+           aria-label="Salva il ticket come immagine PNG">
+          📥 Salva in Galleria
+        </a>
+        <a href="#" class="btn-secondary" onclick="closeModal(); return false;"
+           aria-label="Chiudi il modal ticket">Chiudi</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast per feedback clipboard (JS lo gestisce) -->
+
+  <!-- Screen-reader only utility class -->
+  <style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}</style>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
